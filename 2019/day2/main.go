@@ -63,8 +63,6 @@ func main() {
 						fmt.Println(i1, i2)
 						return
 					}
-				default:
-					log.Panicln("unknown opcode", arr[i], i, i1, i2, arr[i-1], arr[i+1])
 				}
 			}
 		}
