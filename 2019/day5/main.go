@@ -36,29 +36,18 @@ func main() {
 	for {
 		instruction := arr[i]
 		opcode := digit(instruction, 1) + digit(instruction, 2)*10
+		mode1 := digit(instruction, 3)
+		mode2 := digit(instruction, 4)
 		switch opcode {
 		case 1, 2:
-			mode1 := digit(instruction, 3)
-			mode2 := digit(instruction, 4)
-
-			var o1, o2 int
-			if mode1 == 0 {
-				o1 = arr[arr[i+1]]
-			} else {
-				o1 = arr[i+1]
-			}
-
-			if mode2 == 0 {
-				o2 = arr[arr[i+2]]
-			} else {
-				o2 = arr[i+2]
-			}
+			val1 := getVal(arr, i+1, mode1)
+			val2 := getVal(arr, i+2, mode2)
 
 			switch opcode {
 			case 1:
-				arr[arr[i+3]] = o1 + o2
+				arr[arr[i+3]] = val1 + val2
 			case 2:
-				arr[arr[i+3]] = o1 * o2
+				arr[arr[i+3]] = val1 * val2
 			}
 
 			i += 4
@@ -69,21 +58,56 @@ func main() {
 
 			i += 2
 		case 4:
-			mode := digit(instruction, 3)
-
-			if mode == 0 {
-				fmt.Println(arr[arr[i+1]])
-			} else {
-				fmt.Println(arr[i+1])
-			}
+			fmt.Println(getVal(arr, i+1, mode1))
 
 			i += 2
+		case 5:
+			val := getVal(arr, i+1, mode1)
+			if val != 0 {
+				i = getVal(arr, i+2, mode2)
+			} else {
+				i += 3
+			}
+		case 6:
+			val := getVal(arr, i+1, mode1)
+			if val == 0 {
+				i = getVal(arr, i+2, mode2)
+			} else {
+				i += 3
+			}
+		case 7:
+			val1 := getVal(arr, i+1, mode1)
+			val2 := getVal(arr, i+2, mode2)
+			if val1 < val2 {
+				arr[arr[i+3]] = 1
+			} else {
+				arr[arr[i+3]] = 0
+			}
+
+			i += 4
+		case 8:
+			val1 := getVal(arr, i+1, mode1)
+			val2 := getVal(arr, i+2, mode2)
+			if val1 == val2 {
+				arr[arr[i+3]] = 1
+			} else {
+				arr[arr[i+3]] = 0
+			}
+
+			i += 4
 		case 99:
 			return
 		default:
 			log.Panicln("unkown opcode", opcode, i)
 		}
 	}
+}
+
+func getVal(arr []int, idx, mode int) int {
+	if mode == 0 {
+		return arr[arr[idx]]
+	}
+	return arr[idx]
 }
 
 func digit(num, place int) int {
